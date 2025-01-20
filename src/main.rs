@@ -3,9 +3,9 @@ use tyr::error::Error;
 use tyr::payload::Payload;
 
 fn main() -> Result<(), Error> {
-    tyr::rerun_if_not_root()?;
+    tyr::util::rerun_if_not_root()?;
 
-    let interface = tyr::interface::get_interface("wlo1").ok_or(Error::InterfaceNotFound)?;
+    let interface = tyr::util::get_interface("wlo1").ok_or(Error::InterfaceNotFound)?;
 
     let mut payload = tyr::payload::syn::SYNPayload::random(&interface);
     let mut packet = [0u8; 52];

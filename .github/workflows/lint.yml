@@ -1,0 +1,26 @@
+name: Code Lint
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Code Spell Check
+        uses: streetsidesoftware/cspell-action@v6
+        with:
+          files: "**"
+          config: .cspell.json
+          strict: true
+          verbose: true
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+      - name: Rust format check
+        run: cargo fmt --all -- --check

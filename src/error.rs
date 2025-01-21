@@ -1,20 +1,13 @@
-use std::fmt::Display;
-
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("OsError: {0}")]
     OsError(#[from] std::io::Error),
+    #[error("Interface not found")]
     InterfaceNotFound,
-    PacketBufferTooSmall,
+    #[error("Buffer too small")]
+    BufferTooSmall,
+    #[error("Invalid interface: {0}")]
     InvalidInterface(String),
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Error::OsError(e) => write!(f, "OsError: {}", e),
-            _ => write!(f, "{}", self),
-        }
-    }
 }

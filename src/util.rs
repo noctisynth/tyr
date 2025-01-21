@@ -51,6 +51,20 @@ pub fn get_interfaces() -> Vec<datalink::NetworkInterface> {
     datalink::interfaces()
 }
 
+/// Retrieves the network interface with the default gateway.
+///
+/// # Returns
+///
+/// * `Option<datalink::NetworkInterface>` - An option containing the network interface with the default gateway if found, or None if not found.
+pub fn get_default_interface() -> Option<datalink::NetworkInterface> {
+    datalink::interfaces().into_iter().find(|interface| {
+        interface
+            .ips
+            .iter()
+            .any(|ip| ip.is_ipv4() && ip.ip().is_loopback())
+    })
+}
+
 #[inline(always)]
 /// Checks if the current user is the root user.
 ///

@@ -8,6 +8,7 @@
         "dtolnay",
         "ethertype",
         "fastrand",
+        "icmpv",
         "jbolda",
         "libc",
         "noctisynth",

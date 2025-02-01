@@ -109,3 +109,46 @@ pub fn rerun_if_not_root() -> crate::Result<()> {
     }
     Ok(())
 }
+
+/// Calculates the number of threads to use based on the rated power.
+///
+/// The rated power is a value from 1 to 4, which mean use a fraction
+/// of the available threads.
+///
+/// # Arguments
+///
+/// * `rated_power` - The rated power value.
+///
+/// # Returns
+///
+/// The number of threads to use.
+///
+/// # Errors
+///
+/// Returns an error if the system fails to determine the available parallelism.
+///
+/// # Panics
+///
+/// Panics if the rated power is not in the range 1 to 4.
+///
+/// # Warning
+///
+/// 0 is also a legal power rating parameter. Using the zero rated power will
+/// put the unit into a full load condition, which will definitely affect the
+/// normal operation of the unit and may even cause unknown consequences.
+///
+/// **USE AT YOUR OWN RISK!**
+pub fn get_num_threads(rated_power: u8) -> crate::Result<usize> {
+    let available_parallelism = std::thread::available_parallelism()?.get();
+    Ok(match rated_power {
+        0 => available_parallelism,
+        1 => available_parallelism / 10,
+        2 => available_parallelism / 5,
+        3 => available_parallelism / 2,
+        4 => available_parallelism * 3 / 4,
+        _ => panic!(
+            "Invalid rated power {}, available ratings are 1 to 4",
+            rated_power
+        ),
+    })
+}

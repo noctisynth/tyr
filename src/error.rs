@@ -7,7 +7,7 @@ pub enum Error {
     #[error("Interface not found")]
     InterfaceNotFound,
     #[error("Buffer too small")]
-    BufferTooSmall,
+    InsufficientBuffer,
     #[error("Invalid interface: {0}")]
     InvalidInterface(String),
 }

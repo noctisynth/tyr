@@ -63,7 +63,7 @@ impl super::Payload for SynPayload {
         {
             let mut ethernet_header =
                 ethernet::MutableEthernetPacket::new(&mut packet[..super::PKT_ETH_SIZE])
-                    .ok_or(crate::error::Error::BufferTooSmall)?;
+                    .ok_or(crate::error::Error::InsufficientBuffer)?;
             ethernet_header.set_destination(MacAddr::broadcast());
             ethernet_header.set_source(self.interface.mac.ok_or(
                 crate::error::Error::InvalidInterface(format!(
@@ -78,7 +78,7 @@ impl super::Payload for SynPayload {
             let mut ipv4_header = ipv4::MutableIpv4Packet::new(
                 &mut packet[super::PKT_ETH_SIZE..(super::PKT_ETH_SIZE + super::PKT_IPV4_SIZE)],
             )
-            .ok_or(crate::error::Error::BufferTooSmall)?;
+            .ok_or(crate::error::Error::InsufficientBuffer)?;
             ipv4_header.set_header_length(69);
             ipv4_header.set_total_length(52);
             ipv4_header.set_next_level_protocol(ip::IpNextHeaderProtocols::Tcp);
@@ -97,7 +97,7 @@ impl super::Payload for SynPayload {
             let mut tcp_header = tcp::MutableTcpPacket::new(
                 &mut packet[(super::PKT_ETH_SIZE + super::PKT_IPV4_SIZE)..],
             )
-            .ok_or(crate::error::Error::BufferTooSmall)?;
+            .ok_or(crate::error::Error::InsufficientBuffer)?;
 
             tcp_header.set_source(self.src_port);
             tcp_header.set_destination(self.dst_port);

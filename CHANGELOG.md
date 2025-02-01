@@ -1,5 +1,13 @@
 # Changelog
 
+## \[0.1.2]
+
+### New Features
+
+- [`87e516e`](https://github.com/noctisynth/tyr/commit/87e516e0990bd612c40acfe050fd118532cfdb8b) ([#8](https://github.com/noctisynth/tyr/pull/8) by [@fu050409](https://github.com/noctisynth/tyr/../../fu050409)) Add support for ARP payload.
+- [`415a5c4`](https://github.com/noctisynth/tyr/commit/415a5c421fcb2285a36720726f0ad39252e5bc5d) ([#6](https://github.com/noctisynth/tyr/pull/6) by [@fu050409](https://github.com/noctisynth/tyr/../../fu050409)) Add `get_num_threads` to calculate the number of threads to use by rated power.
+- [`415a5c4`](https://github.com/noctisynth/tyr/commit/415a5c421fcb2285a36720726f0ad39252e5bc5d) ([#6](https://github.com/noctisynth/tyr/pull/6) by [@fu050409](https://github.com/noctisynth/tyr/../../fu050409)) Optimize SYN payload packet sequence.
+
 ## \[0.1.1]
 
 ### New Features
